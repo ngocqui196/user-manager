@@ -18,6 +18,8 @@ public class UserDAO implements IUserDAO{
     private static final String SELECT_ALL_USERS = "select * from users";
     private static final String DELETE_USERS_SQL = "delete from users where id = ?;";
     private static final String UPDATE_USERS_SQL = "update users set name = ?,email= ?, country =? where id = ?;";
+    private static final String SEARCH_USERS_SQL = "select * FROM users where country = ?;";
+
 
     public UserDAO() {
     }
@@ -40,7 +42,8 @@ public class UserDAO implements IUserDAO{
     public void insertUser(User user) throws SQLException {
         System.out.println(INSERT_USERS_SQL);
         // try-with-resource statement will auto close the connection.
-        try (Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USERS_SQL)) {
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USERS_SQL)) {
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getEmail());
             preparedStatement.setString(3, user.getCountry());
@@ -101,10 +104,40 @@ public class UserDAO implements IUserDAO{
         }
         return users;
     }
+    @Override
+    public List<User> searchUser(String countrySearch) throws SQLException {
+//        List<User> userList = new ArrayList<>();
+        List<User> userList = new ArrayList<>();
+//        for (int i = 0; i < userList.size(); i++) {
+//            if (countrysss == userList.get(i).getCountry()) {
+//                users.add(userList.get(i));
+//            }
+//        }
+
+        try (Connection connection = getConnection();
+
+             PreparedStatement preparedStatement = connection.prepareStatement(SEARCH_USERS_SQL);) {
+            preparedStatement.setString(1,countrySearch);
+            System.out.println(preparedStatement);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                    int id = rs.getInt("id");
+                    String name = rs.getString("name");
+                    String email = rs.getString("email");
+                    String country = rs.getString("country");
+                userList.add(new User(id, name, email, country));
+            }
+
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+        return userList;
+
+    }
 
     public boolean deleteUser(int id) throws SQLException {
         boolean rowDeleted;
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(DELETE_USERS_SQL);) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(DELETE_USERS_SQL)) {
             statement.setInt(1, id);
             rowDeleted = statement.executeUpdate() > 0;
         }
@@ -113,7 +146,7 @@ public class UserDAO implements IUserDAO{
 
     public boolean updateUser(User user) throws SQLException {
         boolean rowUpdated;
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(UPDATE_USERS_SQL);) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(UPDATE_USERS_SQL)) {
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
             statement.setString(3, user.getCountry());
@@ -123,6 +156,8 @@ public class UserDAO implements IUserDAO{
         }
         return rowUpdated;
     }
+
+
 
     private void printSQLException(SQLException ex) {
         for (Throwable e : ex) {

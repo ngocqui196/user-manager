@@ -34,6 +34,9 @@ public class UserServlet extends javax.servlet.http.HttpServlet {
                 case "edit":
                     updateUser(request, response);
                     break;
+                case "search":
+                    showlistUsersFormFromCountry(request,response);
+                    break;
             }
         } catch (SQLException ex) {
             throw new ServletException(ex);
@@ -65,6 +68,13 @@ public class UserServlet extends javax.servlet.http.HttpServlet {
         } catch (SQLException ex) {
             throw new ServletException(ex);
         }
+    }
+
+    private void showlistUsersFormFromCountry(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+        String country = request.getParameter("country");
+        request.setAttribute("country",country);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("user/search.jsp");
+        dispatcher.forward(request,response);
     }
 
     private void listUser(HttpServletRequest request, HttpServletResponse response)

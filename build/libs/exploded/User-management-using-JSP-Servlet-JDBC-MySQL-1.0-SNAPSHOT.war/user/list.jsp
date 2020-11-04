@@ -15,9 +15,12 @@
 <body>
 <center>
     <h1>User Management</h1>
-    <h2>
-        <a href="/users?action=create">Add New User</a>
-    </h2>
+    <table>
+        <tr>
+            <td><a href="/users?action=create">Add New User</a><br></td>
+            <td><form action="/users?action=search" method="post"><input type="text" name="country" size="15" placeholder="Enter coutry"/> <input type="submit" value="search"></form></td>
+        </tr>
+    </table>
 </center>
 <div align="center">
     <table border="1" cellpadding="5">
