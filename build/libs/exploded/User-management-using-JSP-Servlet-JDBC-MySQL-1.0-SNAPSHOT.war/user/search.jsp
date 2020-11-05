@@ -19,13 +19,16 @@
 </center>
 <div align="center">
     <table border="1" cellpadding="5">
-        <caption><h2>Show List of Users : <c:out value="${user.country}"/></h2></caption>
+        <caption>
+            <h2>
+                Show List of Users : <c:out value="${user.country}"/>
+            </h2>
+        </caption>
         <tr>
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
             <th>Country</th>
-            <th>Actions</th>
         </tr>
         <c:forEach var="user" items="${country}">
             <tr>

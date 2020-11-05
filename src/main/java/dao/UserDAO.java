@@ -19,7 +19,7 @@ public class UserDAO implements IUserDAO{
     private static final String DELETE_USERS_SQL = "delete from users where id = ?;";
     private static final String UPDATE_USERS_SQL = "update users set name = ?,email= ?, country =? where id = ?;";
     private static final String SEARCH_USERS_SQL = "select * FROM users where country = ?;";
-
+    private  static final String SORT_USERS_SQL = "select * from users order by name";
 
     public UserDAO() {
     }
@@ -79,18 +79,15 @@ public class UserDAO implements IUserDAO{
     }
 
     public List<User> selectAllUsers() {
-
         // using try-with-resources to avoid closing resources (boiler plate code)
         List<User> users = new ArrayList<>();
         // Step 1: Establishing a Connection
         try (Connection connection = getConnection();
-
              // Step 2:Create a statement using connection object
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_USERS);) {
             System.out.println(preparedStatement);
             // Step 3: Execute the query or update query
             ResultSet rs = preparedStatement.executeQuery();
-
             // Step 4: Process the ResultSet object.
             while (rs.next()) {
                 int id = rs.getInt("id");
@@ -105,14 +102,30 @@ public class UserDAO implements IUserDAO{
         return users;
     }
     @Override
+    public List<User> sortUsers() {
+        List<User>  listUser = new ArrayList<>();
+        try (Connection connection = getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(SORT_USERS_SQL)) {
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                String country = rs.getString("country");
+                listUser.add(new User(id, name, email, country));
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return listUser;
+    }
+
+    @Override
     public List<User> searchUser(String countrySearch) throws SQLException {
-//        List<User> userList = new ArrayList<>();
+
         List<User> userList = new ArrayList<>();
-//        for (int i = 0; i < userList.size(); i++) {
-//            if (countrysss == userList.get(i).getCountry()) {
-//                users.add(userList.get(i));
-//            }
-//        }
+
 
         try (Connection connection = getConnection();
 
@@ -134,6 +147,8 @@ public class UserDAO implements IUserDAO{
         return userList;
 
     }
+
+
 
     public boolean deleteUser(int id) throws SQLException {
         boolean rowDeleted;

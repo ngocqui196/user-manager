@@ -19,6 +19,7 @@
         <tr>
             <td><a href="/users?action=create">Add New User</a><br></td>
             <td><form action="/users?action=search" method="post"><input type="text" name="country" size="15" placeholder="Enter coutry"/> <input type="submit" value="search"></form></td>
+            <td><a href="/users?action=sort">Sort List Users from name</a></td>
         </tr>
     </table>
 </center>
